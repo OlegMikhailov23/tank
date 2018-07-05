@@ -1,0 +1,52 @@
+@import "variables.less";
+
+@font-face {
+   font-weight: 300;
+   font-family: "Open Sans";
+   font-style: normal;
+   
+   src: url("../fonts/opensanslight.woff"),
+   url("../fonts/opensanslight.woff2");
+}
+
+@font-face {
+   font-weight: 400;
+   font-family: "Open Sans";
+   font-style: normal;
+   
+   src: url("../fonts/opensans.woff"),
+   url("../fonts/opensans.woff2");
+}
+
+@font-face {
+   font-weight: 700;
+   font-family: "Open Sans";
+   font-style: normal;
+   
+   src: url("../fonts/opensansbold.woff"),
+   url("../fonts/opensansbold.woff2");
+}
+
+body {
+    font-family: "Open Sans", "Arial", sans-serif;
+    font-weight: 400;
+    background-color: @body-bg;
+    font-size: @main-font-size;
+    line-height: @main-line-height;
+    color: @main-font-color;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: inherit;
+}
+
+html {
+    box-sizing: border-box;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+}
