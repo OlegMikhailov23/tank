@@ -36,6 +36,11 @@ body {
     color: @main-font-color;
 }
 
+.content-wrapper {
+    .container();
+    background: @body-bg url("../img/background.jpg") center repeat;
+}
+
 *,
 *::before,
 *::after {
@@ -49,4 +54,10 @@ html {
 img {
     max-width: 100%;
     height: auto;
+}
+
+@media @tablet-widths {
+    .content-wrapper{
+    display: flex;
+    }
 }
