@@ -4,7 +4,6 @@ var plumber = require("gulp-plumber");
 var cssnano = require('gulp-cssnano'); // Подключаем пакет для минификации CSS
 var rename = require('gulp-rename'); // Подключаем библиотеку для переименования файлов
 var autoprefixer = require('gulp-autoprefixer');
-var plumber = require("gulp-plumber");
 var del = require('del'); // Подключаем библиотеку для удаления файлов и папок
 var imagemin = require('gulp-imagemin'); // Подключаем библиотеку для работы с изображениями
 var pngquant = require('imagemin-pngquant'); // Подключаем библиотеку для работы с png
@@ -17,15 +16,7 @@ gulp.task('style', function() {
         .pipe(plumber())
         .pipe(less())
         .pipe(
-            autoprefixer({
-                browsers: [
-                    "last 1 version",
-                    "last 2 Chrome versions",
-                    "last 2 Firefox versions",
-                    "last 2 Opera versions",
-                    "last 2 Edge versions"
-                ]
-            }, { cascade: true }),
+            autoprefixer(['last 15 versions', '> 1%', 'ie 8', 'ie 7'], { cascade: true }),
             mqpacker({ sort: true }))
         .pipe(gulp.dest('source/css'))
         .pipe(cssnano())
