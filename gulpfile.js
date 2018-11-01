@@ -1,6 +1,6 @@
 var gulp = require('gulp');
-var less = require("gulp-less");
-var plumber = require("gulp-plumber");
+var less = require('gulp-less');
+var plumber = require('gulp-plumber');
 var cssnano = require('gulp-cssnano'); // Подключаем пакет для минификации CSS
 var rename = require('gulp-rename'); // Подключаем библиотеку для переименования файлов
 var autoprefixer = require('gulp-autoprefixer');
@@ -8,8 +8,10 @@ var del = require('del'); // Подключаем библиотеку для у
 var imagemin = require('gulp-imagemin'); // Подключаем библиотеку для работы с изображениями
 var pngquant = require('imagemin-pngquant'); // Подключаем библиотеку для работы с png
 var cache = require('gulp-cache'); // Подключаем библиотеку кеширования
-var mqpacker = require("css-mqpacker");
-var server = require("browser-sync").create();
+var mqpacker = require('css-mqpacker');
+var concat = require('gulp-concat'); // Подключаем gulp-concat (для конкатенации файлов)
+var uglify = require('gulp-uglifyjs'); // Подключаем gulp-uglifyjs (для сжатия JS)
+var server = require('browser-sync').create();
 
 gulp.task('style', function() {
     return gulp.src('source/less/style.less') // Берем style.less и преобразуем его в css
@@ -19,27 +21,43 @@ gulp.task('style', function() {
             autoprefixer(['last 15 versions', '> 1%', 'ie 8', 'ie 7'], { cascade: true }),
             mqpacker({ sort: true }))
         .pipe(gulp.dest('source/css'))
-        .pipe(cssnano())
-        .pipe(rename("style.min.css"))
-        .pipe(gulp.dest("source/css"))
         .pipe(server.stream()) // Обновляем CSS на странице при изменении
+        .pipe(cssnano())
+        .pipe(rename('style.min.css'))
+        .pipe(gulp.dest('source/css'))
 });
 
-gulp.task("serve", function() {
-  server.init({
-    server: "source",
-    notify: false,
-    open: true,
-    cors: true,
-    ui: false
-  });
-
-  gulp.watch("source/less/**/*.less", ['style']);
-  gulp.watch("source/*.html").on('change', server.reload);
+gulp.task('serve', function() {
+    server.init({
+        server: 'source',
+        notify: false,
+        open: true,
+        cors: true,
+        ui: false
+    });
 });
 
-gulp.task('watch', ['serve', 'style'], function() {
-    gulp.watch("source/less/**/*.less", ['style']); // Наблюдение за less файлами
+gulp.task('scripts', function() {
+    return gulp.src([ // Берем все необходимые библиотеки
+        'source/libs/jquery/dist/jquery.min.js', // Берем jQuery
+        'source/libs/magnific-popup/dist/jquery.magnific-popup.min.js' // Берем Magnific Popup
+        ])
+        .pipe(concat('libs.min.js')) // Собираем их в кучу в новом файле libs.min.js
+        .pipe(uglify()) // Сжимаем JS файл
+        .pipe(gulp.dest('source/js')); // Выгружаем в папку source/js
+});
+
+gulp.task('css-libs', function() {
+    return gulp.src('source/less/libs.less')
+        .pipe(less())
+        .pipe(gulp.dest('source/css'))
+        .pipe(cssnano()) // Сжимаем
+        .pipe(rename('libs.min.css')) // Добавляем суффикс .min
+        .pipe(gulp.dest('source/css')); // Выгружаем в папку source/css
+});
+
+gulp.task('watch', ['serve','css-libs','style', 'scripts'], function() {
+    gulp.watch('source/less/**/*.less', ['style']); // Наблюдение за less файлами
     // Наблюдение за другими типами файлов
     gulp.watch('source/*.html', server.reload); // Наблюдение за HTML файлами в корне проекта
     gulp.watch('source/js/**/*.js', server.reload); // Наблюдение за JS файлами в папке js
@@ -60,12 +78,11 @@ gulp.task('img', function() {
         .pipe(gulp.dest('build/img')); // Выгружаем на продакшен
 });
 
-gulp.task('build', ['clean', 'img', 'style'], function() {
+gulp.task('build', ['clean', 'img', 'style','css-libs', 'scripts'], function() {
 
     var buildCss = gulp.src([ // Переносим CSS стили в продакшен
-            'source/css/style.min.css',
-            'source/css/style.css',
-            'source/normalize.css'
+            'source/css/*.css',
+
         ])
         .pipe(gulp.dest('build/css'))
 

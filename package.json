@@ -20,6 +20,7 @@
     "gulp-plumber": "^1.2.0",
     "gulp-postcss": "^8.0.0",
     "gulp-rename": "^1.4.0",
+    "gulp-uglifyjs": "^0.6.2",
     "imagemin-pngquant": "^6.0.0"
   },
   "scripts": {
